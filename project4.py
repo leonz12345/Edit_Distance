@@ -27,7 +27,11 @@ def ED(src, dest, prob='ED'):
     for i in range(n+1):
         dpTable[i][0] = i
     for j in range(m+1):
-        dpTable[0][j] = j
+        if prob == 'ED':
+            dpTable[0][j] = j
+        else:
+            dpTable[0][j] = 0
+    
     # Fill in the rest of the table
     for i in range(1,n+1):
         for j in range(1,m+1):
@@ -43,13 +47,16 @@ def ED(src, dest, prob='ED'):
     i, j = n,m
     edits = []
     while (i != 0) and (j != 0):
+        # Character matched
         if src[i-1] == dest[j-1]:
             move = ('match', src[i-1], i-1)
             edits.append(move)
             i -= 1
             j -= 1
-        else:
-            smallest = dpTable[i][j]
+        else: # Character did not match
+            smallest = dpTable[i][j] # Initialize minimum
+            # Find the minimum from left, above, and diagnal
+            # and determine the action to take
             if 0 <= i-1 and 0 <= j-1 and dpTable[i-1][j-1] < smallest:
                 smallest = dpTable[i-1][j-1]
                 action = 'sub'
@@ -59,6 +66,7 @@ def ED(src, dest, prob='ED'):
             if 0 <= i and 0 <= j-1 and dpTable[i][j-1] < smallest:
                 smallest = dpTable[i][j-1]
                 action = 'insert'
+            # Based on the action, compute the tuple and move inside dpTable
             if action == 'sub':
                 move = (action, dest[j-1], i-1)
                 i -= 1
@@ -70,15 +78,19 @@ def ED(src, dest, prob='ED'):
                 move = (action, dest[j-1], i)
                 j -= 1
             edits.append(move)
+    # Reached the end of destination string
+    # Keep delete src to match dest
     while i > 0:
         move = ('delete', src[i-1], i-1)
         edits.append(move)
         i -= 1
-    while j > 0:
-        move = ('insert', dest[j-1], i)
-        edits.append(move)
-        j -= 1
-        
+    if prob == 'ED':
+        # Reached the end of source string
+        # Keep insert src to match dest
+        while j > 0:
+            move = ('insert', dest[j-1], i)
+            edits.append(move)
+            j -= 1
             
     return dist, edits
 
@@ -94,6 +106,6 @@ if __name__ == "__main__":
     print()
     compareRandStrings(True, 30, 300, 'ED')
     print()
-    # compareGenomes(True, 30, 300, 'ASM')
-    # print()
-    # compareRandStrings(True, 30, 300, 'ASM')
+    compareGenomes(True, 30, 300, 'ASM')
+    print()
+    compareRandStrings(True, 30, 300, 'ASM')
