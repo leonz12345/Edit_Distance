@@ -116,7 +116,7 @@ def compareGenomes(verbatim=False, trials=30, n=10, prob='ED', seed=None):
         print('Performed ' + str(trials) + ' trials.')
         print('Compared genomes of size ' + str(n))
         print(('Average %s: ' + str(avg)) % prob)
-        print(('Average %s as Fraction of Genome Length: ' + str(avg/n)) % prob)
+        print(('Average %s as Fraction of Genome Length: ' + str((avg*1.0)/(n*1.0))) % prob)
     return avg
 
 ################################################################################
